@@ -71,5 +71,4 @@ jobs:
           username: ${{ secrets.USERNAME_SERVER }}
           password: ${{ secrets.PASSWORD_SERVER }}
           port: ${{ secrets.HOST_PORT }}
-          script: | docker pull  hendralw/product-service:latest
-          docker run -d --restart unless-stopped --name product-service -p 8080:8080 -e SPRING.DATASOURCE.URL=jdbc:postgresql://35.198.195.110:5432/postgres SPRING.DATASOURCE.USERNAME=postgres SPRING.DATASOURCE.PASSWORD=postgres
+          script: docker pull  hendralw/product-service:latest docker run -d --restart unless-stopped --name product-service -p 8080:8080 -e SPRING.DATASOURCE.URL=jdbc:postgresql://35.198.195.110:5432/postgres SPRING.DATASOURCE.USERNAME=postgres SPRING.DATASOURCE.PASSWORD=postgres
