@@ -1,6 +1,7 @@
 package com.procurement.apps.controller;
 
 import com.procurement.apps.model.ProductRequest;
+import com.procurement.apps.model.UpdateStockRequest;
 import com.procurement.apps.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,13 @@ public class ProductController {
     private String BASE_URL;
     @Value("[product-service]")
     private String SERVICE_NAME;
-
+    @Value("${sm://greeting}")
+    private String test;
+    @Value("${sm://POSTGRES_URL}")
+    private String test2;
     @GetMapping
     public ResponseEntity hello(){
-        return new ResponseEntity("Product-Service is Online", HttpStatus.OK);
+        return new ResponseEntity(test + " === " + test2, HttpStatus.OK);
     }
 
     @GetMapping("/v1/products")
@@ -48,6 +52,12 @@ public class ProductController {
     @PatchMapping("/v1/products")
     public ResponseEntity updateProduct(@RequestBody ProductRequest request){
         var result = productService.updateProduct(request);
+        return ResponseEntity.status(result.getCode()).body(result);
+    }
+
+    @PatchMapping("/v1/products/update_stock")
+    public ResponseEntity updateStock(@RequestBody UpdateStockRequest request){
+        var result = productService.updateStock(request);
         return ResponseEntity.status(result.getCode()).body(result);
     }
 }
