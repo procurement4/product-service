@@ -40,10 +40,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.6.6'
 	implementation "com.google.cloud:spring-cloud-gcp-starter-secretmanager:3.2.1"
-//	implementation platform('com.google.cloud:libraries-bom:26.1.4')
-//	implementation 'com.google.cloud:google-cloud-secretmanager'
-//	compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-secretmanager'
-//	compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-secretmanager'
 }
 
 tasks.named('test') {
