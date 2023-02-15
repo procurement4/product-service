@@ -6,6 +6,8 @@ import com.procurement.apps.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,7 @@ public class ProductController {
 
     @GetMapping("/v1/products/{productId}")
     public ResponseEntity getProductById(@PathVariable String productId){
+        log.info("[LOG] getProductById is called");
         var result = productService.getProductById(productId);
         return ResponseEntity.status(result.getCode()).body(result);
     }

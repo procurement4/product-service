@@ -5,6 +5,8 @@ import com.procurement.apps.entity.Product;
 import com.procurement.apps.model.ProductRequest;
 import com.procurement.apps.model.ProductResponse;
 import com.procurement.apps.model.UpdateStockRequest;
+//import com.procurement.apps.repository.ProductRepository;
+import com.procurement.apps.repository.ProductRepository;
 import com.procurement.apps.repository.ProductRepositoryJPA;
 import com.procurement.apps.utils.ResponseAPI;
 import com.procurement.apps.utils.ValidationRequest;
@@ -13,10 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.repository.query.Param;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,22 +27,17 @@ import java.util.UUID;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepositoryJPA productRepositoryJPA;
+    private final ProductRepository productRepository;
     private final ResponseAPI responseAPI;
     @Autowired
     private final ModelMapper modelMapper;
     @Value("[product-service]")
     private String SERVICE_NAME;
 
-    @Value("${sm://greeting}")
-    private String POSTGRES_URL;
-    @Value("${sm://POSTGRES_URL}")
-    private String POSTGRES_URL2;
     public ResponseAPI getAllProduct(){
         try {
-            var asd = POSTGRES_URL2;
-            var test =POSTGRES_URL;
             log.info(String.format("%s productService.getAllProduct is called", SERVICE_NAME));
-            var getAllProduct = productRepositoryJPA.findAll().stream().filter(x -> x.getIs_deleted().equals(false));
+            var getAllProduct = productRepository.findAll().stream().filter(x -> x.getIs_deleted().equals(false));
             var data = getAllProduct.map(x -> modelMapper.map(x, ProductResponse.class)).toList();
             log.info(String.format("%s Result : %s", SERVICE_NAME, new Gson().toJson(data)));
             return responseAPI.OK("Success get data", data);
@@ -53,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseAPI getProductById(String productId){
         try {
             var id = UUID.fromString(productId);
-            var getProductById = productRepositoryJPA.findById(id).filter(x -> x.getIs_deleted().equals(false));
+            var getProductById = productRepository.findById(id).filter(x -> x.getIs_deleted().equals(false));
             var data = modelMapper.map(getProductById, ProductResponse.class);
             if (getProductById.isEmpty()) return responseAPI.NOT_FOUND("Product not found", null);
             return responseAPI.OK("Success get data", data);
@@ -63,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
             return responseAPI.INTERNAL_SERVER_ERROR(errMsg,null);
         }
     }
+
     public ResponseAPI createProduct(ProductRequest request){
         try {
             //Validate request
@@ -77,10 +76,10 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setUpdated_at(new Date());
             newProduct.setCreated_by(request.getUser_id().toString());
             newProduct.setUpdated_by(request.getUser_id().toString());
-            productRepositoryJPA.save(newProduct);
+            productRepository.save(newProduct);
 
             //Check data saved
-            var getProductById = productRepositoryJPA.findById(newProduct.getId());
+            var getProductById = productRepository.findById(newProduct.getId());
             if (getProductById.isEmpty()){
                 log.info(String.format("%s Product not found", SERVICE_NAME));
                 return responseAPI.INTERNAL_SERVER_ERROR("Failed create new product", null);
@@ -104,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
             var validate = new ValidationRequest(request).validate();
             if (validate.size() > 0) return responseAPI.BAD_REQUEST(validate.toString(), null);
 
-            var getProductById = productRepositoryJPA.findById(id);
+            var getProductById = productRepository.findById(id);
             if (getProductById.isEmpty()) return responseAPI.INTERNAL_SERVER_ERROR("Product not found", null);
 
             var updatedProduct = modelMapper.map(request, Product.class);
@@ -112,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
             updatedProduct.setUpdated_at(new Date());
             updatedProduct.setCreated_by(getProductById.get().getCreated_by());
             updatedProduct.setUpdated_by(request.getUser_id().toString());
-            productRepositoryJPA.save(updatedProduct);
+            productRepository.update(updatedProduct);
 
             var data = modelMapper.map(updatedProduct, ProductResponse.class);
             return responseAPI.OK("Success update data product", data);
@@ -129,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
             var id = UUID.fromString(request.getId());
             var validate = new ValidationRequest(request).validate();
             if (validate.size() > 0) return responseAPI.BAD_REQUEST(validate.toString(), null);
-            var getProductById = productRepositoryJPA.findById(id);
+            var getProductById = productRepository.findById(id);
             if (getProductById.isEmpty()) return responseAPI.INTERNAL_SERVER_ERROR("Product not found", null);
             var currentStock = request.getStock() + getProductById.get().getStock();
             productRepositoryJPA.updateStock(currentStock, request.getUser_id(), new Date(), getProductById.get().getId());
