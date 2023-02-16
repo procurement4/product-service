@@ -1,14 +1,12 @@
 package com.procurement.apps.repository;
 
 import com.procurement.apps.entity.Product;
-import com.procurement.apps.model.ProductRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.*;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,21 +16,22 @@ import java.util.UUID;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-//@CacheConfig(cacheNames = {"products"})
 public class ProductRepository {
     @Autowired
     private final ProductRepositoryJPA productRepositoryJPA;
     private final String HASH_VALUE = "Product";
+    @Value("[product-service]")
+    private String SERVICE_NAME;
 
     @Cacheable(value = HASH_VALUE ,key = "#id")
     public Optional<Product> findById(UUID id){
-        log.info("[LOG] getProductById is called from database");
+        log.info(String.format("%s getProductById is called from database",SERVICE_NAME));
         return productRepositoryJPA.findById(id);
     }
 
     @Cacheable(value = HASH_VALUE)
     public List<Product> findAll(){
-        log.info("[LOG] getAllProduct is called from database");
+        log.info(String.format("%s getAllProduct is called from database",SERVICE_NAME));
         return productRepositoryJPA.findAll();
     }
 

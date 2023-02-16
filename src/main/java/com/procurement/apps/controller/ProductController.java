@@ -24,42 +24,42 @@ public class ProductController {
     private String BASE_URL;
     @Value("[product-service]")
     private String SERVICE_NAME;
-    @Value("${sm://greeting}")
-    private String test;
-    @Value("${sm://POSTGRES_URL}")
-    private String test2;
     @GetMapping
     public ResponseEntity hello(){
-        return new ResponseEntity(test + " === " + test2, HttpStatus.OK);
+        return new ResponseEntity("Product-Service is online", HttpStatus.OK);
     }
 
     @GetMapping("/v1/products")
     public ResponseEntity getAllProduct(){
+        log.info(String.format("%s GET /v1/products is called",SERVICE_NAME));
         var result = productService.getAllProduct();
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @GetMapping("/v1/products/{productId}")
     public ResponseEntity getProductById(@PathVariable String productId){
-        log.info("[LOG] getProductById is called");
+        log.info(String.format("$s GET /v1/products/{productId} is called", SERVICE_NAME));
         var result = productService.getProductById(productId);
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PostMapping("/v1/products")
     public ResponseEntity createProduct(@RequestBody ProductRequest request){
+        log.info(String.format("%s POST /v1/products is called", SERVICE_NAME));
         var result = productService.createProduct(request);
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PatchMapping("/v1/products")
     public ResponseEntity updateProduct(@RequestBody ProductRequest request){
+        log.info(String.format("%s PATCH /v1/products is called", SERVICE_NAME));
         var result = productService.updateProduct(request);
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
     @PatchMapping("/v1/products/update_stock")
     public ResponseEntity updateStock(@RequestBody UpdateStockRequest request){
+        log.info(String.format("%s PATCH /v1/products/update_stock is called", SERVICE_NAME));
         var result = productService.updateStock(request);
         return ResponseEntity.status(result.getCode()).body(result);
     }

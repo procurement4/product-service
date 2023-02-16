@@ -5,7 +5,6 @@ import com.procurement.apps.entity.Product;
 import com.procurement.apps.model.ProductRequest;
 import com.procurement.apps.model.ProductResponse;
 import com.procurement.apps.model.UpdateStockRequest;
-//import com.procurement.apps.repository.ProductRepository;
 import com.procurement.apps.repository.ProductRepository;
 import com.procurement.apps.repository.ProductRepositoryJPA;
 import com.procurement.apps.utils.ResponseAPI;
@@ -15,11 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -50,9 +47,11 @@ public class ProductServiceImpl implements ProductService {
 
     public ResponseAPI getProductById(String productId){
         try {
+            log.info(String.format("%s productService.getProductById is called", SERVICE_NAME));
             var id = UUID.fromString(productId);
             var getProductById = productRepository.findById(id).filter(x -> x.getIs_deleted().equals(false));
             var data = modelMapper.map(getProductById, ProductResponse.class);
+            log.info(String.format("%s Result : %s", SERVICE_NAME, new Gson().toJson(data)));
             if (getProductById.isEmpty()) return responseAPI.NOT_FOUND("Product not found", null);
             return responseAPI.OK("Success get data", data);
         }catch (Exception ex){
@@ -65,6 +64,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseAPI createProduct(ProductRequest request){
         try {
             //Validate request
+            log.info(String.format("%s productService.createProduct is called", SERVICE_NAME));
             var validate = new ValidationRequest(request).validate();
             if (validate.size() > 0){
                 log.info(String.format("Validate Error : %s", validate.toString()));
@@ -98,6 +98,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseAPI updateProduct(ProductRequest request){
         try {
             //Validate request
+            log.info(String.format("%s productService.updateProduct is called", SERVICE_NAME));
             if (request.getId() == null) return responseAPI.INTERNAL_SERVER_ERROR("[id must not be blank]", null);
             var id = UUID.fromString(request.getId());
             var validate = new ValidationRequest(request).validate();
@@ -124,6 +125,7 @@ public class ProductServiceImpl implements ProductService {
 
     public ResponseAPI updateStock(UpdateStockRequest request){
         try {
+            log.info(String.format("%s productService.updateStock is called", SERVICE_NAME));
             if (request.getId() == null) return responseAPI.INTERNAL_SERVER_ERROR("[id must not be blank]", null);
             var id = UUID.fromString(request.getId());
             var validate = new ValidationRequest(request).validate();
