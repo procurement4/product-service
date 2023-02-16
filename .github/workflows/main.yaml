@@ -75,4 +75,4 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/product-service:latest
             docker stop product-service
             docker rm product-service
-            docker run -d --restart unless-stopped --name product-service -p 8080:8080 ${{ secrets.USERNAME }}/product-service:latest
+            docker run -d --restart unless-stopped --name product-service -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/product-service:latest
