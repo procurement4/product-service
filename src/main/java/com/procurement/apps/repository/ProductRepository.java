@@ -23,26 +23,26 @@ public class ProductRepository {
     @Value("[product-service]")
     private String SERVICE_NAME;
 
-//    @Cacheable(value = HASH_VALUE ,key = "#id")
+    @Cacheable(value = HASH_VALUE ,key = "#id")
     public Optional<Product> findById(UUID id){
         log.info(String.format("%s getProductById is called from database",SERVICE_NAME));
         return productRepositoryJPA.findById(id);
     }
 
-//    @Cacheable(value = HASH_VALUE)
+    @Cacheable(value = HASH_VALUE)
     public List<Product> findAll(){
         log.info(String.format("%s getAllProduct is called from database",SERVICE_NAME));
         return productRepositoryJPA.findAll();
     }
 
     @Transactional
-//    @CacheEvict(value = HASH_VALUE, key = "T(org.springframework.cache.interceptor.SimpleKey).EMPTY")
+    @CacheEvict(value = HASH_VALUE, key = "T(org.springframework.cache.interceptor.SimpleKey).EMPTY")
     public Product save(Product product){
         return productRepositoryJPA.save(product);
     }
 
-//    @CachePut(value = HASH_VALUE, key = "#product.id")
-//    @CacheEvict(value = HASH_VALUE, key = "T(org.springframework.cache.interceptor.SimpleKey).EMPTY")
+    @CachePut(value = HASH_VALUE, key = "#product.id")
+    @CacheEvict(value = HASH_VALUE, key = "T(org.springframework.cache.interceptor.SimpleKey).EMPTY")
     public Product update(Product product){
         return productRepositoryJPA.save(product);
     }
