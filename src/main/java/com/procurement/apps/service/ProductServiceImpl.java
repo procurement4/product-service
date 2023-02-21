@@ -87,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
 
             log.info(String.format("%s Data successfully created", SERVICE_NAME));
             var data = modelMapper.map(getProductById, ProductResponse.class);
-            return responseAPI.CREATED("Success create new user", data);
+            return responseAPI.CREATED("Success create new product", data);
         }catch (Exception ex){
             var errMsg = String.format("Error Message : %s with Stacktrace : %s",ex.getMessage(),ex.getStackTrace());
             log.error(String.format("%s" , errMsg));
