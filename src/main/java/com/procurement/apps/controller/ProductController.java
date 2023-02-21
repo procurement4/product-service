@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class ProductController {
     private final ProductService productService;
     @Value("${BASE_URL}")
@@ -26,7 +26,6 @@ public class ProductController {
     @Value("[product-service]")
     private String SERVICE_NAME;
     @GetMapping
-    @CrossOrigin(origins = "*")
     public ResponseEntity hello(){
         return new ResponseEntity("Product-Service is online", HttpStatus.OK);
     }
