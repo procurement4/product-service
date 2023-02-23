@@ -51,7 +51,7 @@ public class ProductController {
         return ResponseEntity.status(result.getCode()).body(result);
     }
 
-    @PatchMapping("/v1/products")
+    @PostMapping("/v1/update_products")
     public ResponseEntity updateProduct(@RequestBody ProductRequest request){
         log.info(String.format("%s PATCH /v1/products is called", SERVICE_NAME));
         var result = productService.updateProduct(request);
